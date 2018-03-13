@@ -1,0 +1,11 @@
+spring:
+      application:
+              name: boot-db-service
+
+server:
+      port: 8023
+
+#Mongo Database Details
+
+
+
