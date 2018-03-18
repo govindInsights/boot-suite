@@ -10,4 +10,7 @@ public interface EventRepository extends MongoRepository<EventDetailsModel, Long
 
     @Query("{name : ?0}")
     public EventDetailsModel getEventByName(String name);
+
+    @Query(value = " '$and' : [{name: ?0}, {location: ?1} ]}")
+    public List<EventDetailsModel> getEventByNameAndLocation(String name, String location);
 }
