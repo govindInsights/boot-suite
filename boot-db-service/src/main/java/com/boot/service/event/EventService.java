@@ -2,6 +2,7 @@ package com.boot.service.event;
 
 import com.boot.service.db.mongomodel.EventDetailsModel;
 import com.boot.service.db.repositoryimpl.EventRepository;
+import com.boot.service.db.repositoryimpl.EventRepositoryCustom;
 import com.boot.service.model.EventDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ public class EventService {
     @Autowired
     EventRepository eventRepository;
 
+    @Autowired
+    EventRepositoryCustom eventRepositoryCustom;
+
     @RequestMapping(value = "/get/{name}", method = RequestMethod.GET)
     public EventDetails getEvent(@PathVariable(name = "name") String name){
         EventDetailsModel model = eventRepository.getEventByName(name);
@@ -34,12 +38,13 @@ public class EventService {
     @RequestMapping(value = "/get/{name}/{location}", method = RequestMethod.GET)
     public List<EventDetails> getEvent(@PathVariable(name = "name") String name,
                                  @PathVariable(name= "location",required = false) String location){
-        EventDetailsModel model = eventRepository.getEventByName(name);
+       // EventDetailsModel model = null;//eventRepository.getEventByName(name);
 
         if(Objects.nonNull(location)){
-            return eventRepository.getEventByNameAndLocation(name, location).parallelStream().map(
+            List<EventDetailsModel> eventDetailsModelList =  eventRepositoryCustom.getEventsByNameAndLocation(name, location);
+            return eventDetailsModelList.parallelStream().map(
                     eventDetailsModel ->
-                    new EventDetails(model.getId(), model.getName(), model.getLocation(), model.getDescription())
+                    new EventDetails(eventDetailsModel.getId(), eventDetailsModel.getName(), eventDetailsModel.getLocation(), eventDetailsModel.getDescription())
             ).collect(Collectors.toList());
         }else{
             return null;
